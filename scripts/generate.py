@@ -361,7 +361,7 @@ INDEX_TEMPLATE = """<!doctype html>
 <style>
   body {{
     margin: 0;
-    background: #f5f4ed;
+    background: #ffffff;
     color: #33322e;
     font: 16px/1.9 "Songti SC", "Noto Serif CJK SC", "Source Han Serif SC", serif;
   }}
@@ -390,7 +390,9 @@ INDEX_TEMPLATE = """<!doctype html>
     margin: 52px 0 4px;
   }}
   .cal {{
-    padding: 16px 0 6px;
+    background: #f5f4ed;
+    padding: 14px 18px 10px;
+    margin: 14px 0 0;
   }}
   .cal h3 {{
     font-size: 18px;
@@ -490,6 +492,10 @@ INDEX_TEMPLATE = """<!doctype html>
 """
 
 
+# 落地页站名与 ICS 日历名解耦：页面承载全部订阅，日历名只描述各自日历
+PAGE_TITLE = "RedDays 日历订阅"
+
+
 def write_all(out_dir: str):
     days, papers = load_days()
     os.makedirs(out_dir, exist_ok=True)
@@ -502,7 +508,7 @@ def write_all(out_dir: str):
         outputs.append(path)
     index_path = os.path.join(out_dir, "index.html")
     with open(index_path, "w", encoding="utf-8", newline="\n") as f:
-        f.write(INDEX_TEMPLATE.format(title=CONFIG["calendar_name"]))
+        f.write(INDEX_TEMPLATE.format(title=PAGE_TITLE))
     outputs.append(index_path)
     return outputs
 
