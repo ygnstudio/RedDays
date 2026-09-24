@@ -1,0 +1,124 @@
+name: Publish
+
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+  schedule:
+    # UTC 23:30 / 11:30 = 北京 07:30 / 19:30，公告后最坏延迟约 12 小时
+    - cron: "30 23,11 * * *"
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: publish
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: "3.14"
+
+      - name: Install dependencies
+        run: pip install -r dev-requirements.txt
+
+      - name: Baseline generate (pre-sync)
+        run: python ./scripts/generate.py --out /tmp/ics-before
+
+      - name: Sync data (direct gov.cn + freshness guard)
+        run: python ./scripts/sync.py
+
+      - name: New-year review gate
+        id: review
+        run: |
+          if [ -f dist/pending-review.txt ]; then
+            echo "pending=yes" >> "$GITHUB_OUTPUT"
+            cat dist/pending-review.txt
+          else
+            echo "pending=no" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Create review issue
+        if: steps.review.outputs.pending == 'yes'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TITLE: "[bot] 新年份安排待人工确认"
+        run: |
+          BODY="$(cat dist/pending-review.txt)"
+          if gh issue list --state open --search "$TITLE in:title" | grep -q .; then
+            echo "review issue already open"
+          else
+            gh issue create --title "$TITLE" --body "$BODY"
+          fi
+
+      - name: Generate calendars
+        run: python ./scripts/generate.py --out dist
+
+      - name: Guard - data changed but calendars did not
+        run: |
+          if git diff --exit-code --quiet -- 'data/[0-9][0-9][0-9][0-9].json'; then
+            echo "data unchanged"
+          else
+            if diff -r /tmp/ics-before dist > /dev/null 2>&1; then
+              echo "::error::data/*.json changed but generated ICS is identical - generator is broken"
+              exit 1
+            fi
+            echo "data and calendars both changed: OK"
+          fi
+
+      - name: Cross-check with Apple official calendar
+        run: python ./scripts/crosscheck.py
+
+      - name: Run tests
+        run: python -m pytest -q
+
+      - name: Commit data changes
+        if: steps.review.outputs.pending != 'yes'
+        run: |
+          git config user.name "GitHub Actions"
+          git config user.email "actions@users.noreply.github.com"
+          git add 'data/[0-9][0-9][0-9][0-9].json'
+          if git diff --cached --quiet; then
+            echo "no data changes to commit"
+          else
+            git commit -m "chore(sync): update holiday data [skip ci]"
+            git push
+          fi
+
+      - name: Create issue on degraded sync
+        if: hashFiles('dist/sync-status.txt') != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TITLE: "[bot] 数据源降级告警"
+        run: |
+          if grep -q "degraded=yes" dist/sync-status.txt; then
+            if gh issue list --state open --search "$TITLE in:title" | grep -q .; then
+              echo "degradation issue already open"
+            else
+              gh issue create --title "$TITLE" \
+                --body "本次同步发生降级：\`$(cat dist/sync-status.txt)\`。详见 workflow 日志。gov.cn 改版时请对照 docs/ARCHITECTURE.md 运维手册修复 scripts/govcn.py。"
+            fi
+          else
+            echo "sync was healthy"
+          fi
+
+      - name: Upload Pages artifact
+        if: steps.review.outputs.pending != 'yes'
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+      - name: Deploy to GitHub Pages
+        if: steps.review.outputs.pending != 'yes'
+        id: deployment
+        uses: actions/deploy-pages@v4

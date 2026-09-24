@@ -1,0 +1,7 @@
+{
+    "$schema": "https://raw.githubusercontent.com/ygnstudio/RedDays/master/schema.json",
+    "$id": "https://raw.githubusercontent.com/ygnstudio/RedDays/master/data/2027.json",
+    "year": 2027,
+    "papers": [],
+    "days": []
+}
