@@ -4,6 +4,8 @@ beautifulsoup4==4.15.0
 
 # 历法计算（scripts/lunarcal.py 需要，节气/农历/黄历全本地推算）
 lunar_python==1.4.8
+# 回历换算（scripts/ethniccal.py 需要）
+hijridate==2.3.0
 
 # 校验与测试
 icalendar==6.3.2

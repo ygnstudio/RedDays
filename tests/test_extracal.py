@@ -9,6 +9,7 @@ import os
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "scripts")))
 from lunarcal import build_almanac_events, build_lunar_events, render  # noqa: E402
+from ethniccal import build_christian, build_ethnic, build_hijri, easter  # noqa: E402
 from hkcal import build_events as hk_build_events  # noqa: E402
 from hkcal import render as hk_render  # noqa: E402
 from hkcal import write_all as hk_write_all  # noqa: E402
@@ -146,3 +147,43 @@ def test_hk_gate_detects_unapproved_change(tmp_path, monkeypatch):
     monkeypatch.setattr(sync_mod, "hk_head_content", fake_head)
     assert sync_mod.detect_hk_pending(approved={2025, 2026}, head_reader=fake_head) == [2027]
     assert sync_mod.detect_hk_pending(approved={2025, 2026, 2027}, head_reader=fake_head) == []
+
+
+def test_easter_computus():
+    assert easter(2026) == __import__("datetime").date(2026, 4, 5)
+    assert easter(2025) == __import__("datetime").date(2025, 4, 20)
+
+
+def test_ethnic_key_dates_2026():
+    events = build_ethnic([2026])
+    got = {(e[0].isoformat(), e[2]) for e in events}
+    assert ("2026-03-20", "开斋节") in got
+    assert ("2026-05-27", "古尔邦节") in got
+    assert ("2026-02-18", "藏历新年") in got
+    assert ("2026-04-13", "泼水节") in got
+    assert ("2026-08-06", "火把节") in got
+    assert ("2026-11-20", "彝历新年") in got
+
+
+def test_ethnic_islamic_desc_carries_caveat():
+    events = build_ethnic([2026])
+    for _, _, summary, desc in events:
+        if summary in ("开斋节", "古尔邦节"):
+            assert "以当地政府公告为准" in desc
+
+
+def test_hijri_daily_covers_full_year():
+    events = build_hijri([2026])
+    assert len(events) == 365
+    assert len({e[0] for e in events}) == 365
+    marks = [e for e in events if "斋月首日" in e[2]]
+    assert any(e[0].isoformat() == "2026-02-18" for e in marks)
+
+
+def test_christian_key_dates_2026():
+    events = build_christian([2026])
+    got = {(e[0].isoformat(), e[2]) for e in events}
+    assert ("2026-04-05", "复活节") in got
+    assert ("2026-04-03", "耶稣受难节") in got
+    assert ("2026-12-25", "圣诞节") in got
+    assert len(events) == 9

@@ -12,6 +12,9 @@
 - 节气农历：`https://ygnstudio.github.io/RedDays/reddays-lunar.ics`
 - 每日黄历：`https://ygnstudio.github.io/RedDays/reddays-almanac.ics`
 - 香港公众假期：`https://ygnstudio.github.io/RedDays/reddays-hk.ics`（简体）、`https://ygnstudio.github.io/RedDays/reddays-hk-tc.ics`（繁體）
+- 民族节日：`https://ygnstudio.github.io/RedDays/reddays-ethnic.ics`
+- 回历每日：`https://ygnstudio.github.io/RedDays/reddays-hijri.ics`
+- 基督教历：`https://ygnstudio.github.io/RedDays/reddays-christian.ics`
 
 ## 日历长什么样
 
@@ -45,13 +48,16 @@
 
 建议详细版和极简版都订，平时只开极简版，放假前打开详细版。补班版供单订补班提醒的人选用。
 
-## 另外三个日历
+## 其余日历
 
 | 日历 | 数据来源 | 内容 |
 |---|---|---|
 | **节气农历** | lunar_python 天文算法，本地推算，无外部数据源 | 二十四节气（含交节时刻）+ 每月初一十五，农历日期入标题，保留过去 1 年预生成未来 2 年 |
 | **每日黄历** | 同上 | 每天一条：标题为宜忌摘要，描述含完整宜忌、冲煞、彭祖百忌、胎神占方、吉凶神，保留当年与次年 |
 | **香港公众假期** | 香港特区政府 1823 官方 JSON（简繁双语），每年更新 | 全年公众假期，分简体（`reddays-hk.ics`）与繁体（`reddays-hk-tc.ics`）两版，各版标题与描述保持同一种文字；新年份同样过人工审查门禁 |
+| **民族节日** | 回历 hijridate 推算 + 农历/公历规则 + 藏历新年已核实表 | 开斋节、古尔邦节、藏历新年、泼水节、火把节、彝历新年；伊斯兰节日的官方放假日期以当地政府公告为准，描述内已标注 |
+| **回历每日** | hijridate（Umm al-Qura 历法），本地换算 | 每天一条带回历日期，伊斯兰历新年、斋月首日、开斋节、古尔邦节等纪念日写入标题 |
+| **基督教历** | 复活节 computus 纯算法 | 复活节、耶稣受难节、棕枝主日、圣灰星期三、升天节、圣灵降临节、主显节、平安夜、圣诞节，全年 9 条 |
 
 **添加方式**：macOS「日历 → 文件 → 新建日历订阅（⌥⌘S）」粘贴链接；或把 `https://` 换成 `webcal://` 直接点开。
 

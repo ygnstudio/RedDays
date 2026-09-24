@@ -478,6 +478,23 @@ INDEX_TEMPLATE = """<!doctype html>
     <p class="links"><a href="reddays-hk-tc.ics">reddays-hk-tc.ics</a><a href="webcal://ygnstudio.github.io/RedDays/reddays-hk-tc.ics">iPhone 點此直接添加</a></p>
   </div>
 
+  <h2>民族与宗教</h2>
+  <div class="cal">
+    <h3>民族节日</h3>
+    <p>开斋节、古尔邦节（回历推算）、藏历新年（官方名单逐年核实）、泼水节、火把节、彝历新年，全年约 8 条。伊斯兰节日日期以当地政府公告为准。</p>
+    <p class="links"><a href="reddays-ethnic.ics">reddays-ethnic.ics</a><a href="webcal://ygnstudio.github.io/RedDays/reddays-ethnic.ics">iPhone 点此直接添加</a></p>
+  </div>
+  <div class="cal">
+    <h3>回历每日</h3>
+    <p>每天一条带回历日期，斋月、开斋节、古尔邦节等纪念日写入标题。Umm al-Qura 历法换算。</p>
+    <p class="links"><a href="reddays-hijri.ics">reddays-hijri.ics</a><a href="webcal://ygnstudio.github.io/RedDays/reddays-hijri.ics">iPhone 点此直接添加</a></p>
+  </div>
+  <div class="cal">
+    <h3>基督教历</h3>
+    <p>复活节及受难节、升天节等关联节日（纯算法推算），加平安夜、圣诞节、主显节，全年 9 条。</p>
+    <p class="links"><a href="reddays-christian.ics">reddays-christian.ics</a><a href="webcal://ygnstudio.github.io/RedDays/reddays-christian.ics">iPhone 点此直接添加</a></p>
+  </div>
+
   <section class="how">
     <h2>添加方式</h2>
     <p>Mac：日历 → 文件 → 新建日历订阅（⌥⌘S），粘贴链接。</p>

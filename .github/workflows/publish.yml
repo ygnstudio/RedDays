@@ -37,6 +37,7 @@ jobs:
           python ./scripts/generate.py --out /tmp/ics-before
           python ./scripts/lunarcal.py --out /tmp/ics-before
           python ./scripts/hkcal.py --out /tmp/ics-before
+          python ./scripts/ethniccal.py --out /tmp/ics-before
 
       # 1823 拉取失败不阻断发布：data/hk/ 已提交版本即快照，
       # 长期失联由 freshness guard（400 天）兜底。
@@ -76,6 +77,7 @@ jobs:
           python ./scripts/generate.py --out dist
           python ./scripts/lunarcal.py --out dist
           python ./scripts/hkcal.py --out dist
+          python ./scripts/ethniccal.py --out dist
 
       - name: Guard - data changed but calendars did not
         run: |
