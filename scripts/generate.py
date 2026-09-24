@@ -436,7 +436,7 @@ INDEX_TEMPLATE = """<!doctype html>
 <body>
 <main>
   <h1>{title}</h1>
-  <p class="sub">官方公告与天文历法算法，GitHub Actions 每日自动发布。以下订阅按需选订，互不冲突。</p>
+  <p class="sub">官方公告与天文历法自动保持更新。按需选订，互不冲突。</p>
 
   <h2>中国大陆法定节假日</h2>
   <div class="cal">
@@ -458,41 +458,41 @@ INDEX_TEMPLATE = """<!doctype html>
   <h2>历法</h2>
   <div class="cal">
     <h3>节气农历</h3>
-    <p>每天一条带农历日期（正月初一、腊月廿八），二十四节气单列并含交节时刻，全年约 390 条。天文算法本地推算，不用等任何机构发布。</p>
+    <p>每天一条带农历日期（正月初一、腊月廿八），二十四节气单列并含交节时刻，全年约 390 条。</p>
     <p class="links"><a href="reddays-lunar.ics">reddays-lunar.ics</a><a href="webcal://ygnstudio.github.io/RedDays/reddays-lunar.ics">iPhone 点此直接添加</a></p>
   </div>
   <div class="cal">
     <h3>每日黄历</h3>
-    <p>每天一条，标题是宜忌摘要，点开有完整宜忌、冲煞、彭祖百忌、胎神占方和吉凶神。信不信由你，当个传统文化日历用。</p>
+    <p>每天一条，标题是宜忌摘要，点开有完整宜忌、冲煞、彭祖百忌、胎神占方和吉凶神。当个传统文化日历用。</p>
     <p class="links"><a href="reddays-almanac.ics">reddays-almanac.ics</a><a href="webcal://ygnstudio.github.io/RedDays/reddays-almanac.ics">iPhone 点此直接添加</a></p>
   </div>
 
   <h2>香港公众假期</h2>
   <div class="cal">
     <h3>简体版</h3>
-    <p>香港特区政府 1823 官方名单，标题与描述均为简体。港股、跨境安排用。</p>
+    <p>全年公众假期，标题与描述均为简体。港股、跨境安排用。</p>
     <p class="links"><a href="reddays-hk.ics">reddays-hk.ics</a><a href="webcal://ygnstudio.github.io/RedDays/reddays-hk.ics">iPhone 点此直接添加</a></p>
   </div>
   <div class="cal">
     <h3>繁體版</h3>
-    <p>同一份官方名單，標題與描述均為繁體。與簡體版任選其一即可。</p>
+    <p>同一份名單的繁體版，標題與描述均為繁體。與簡體版任選其一即可。</p>
     <p class="links"><a href="reddays-hk-tc.ics">reddays-hk-tc.ics</a><a href="webcal://ygnstudio.github.io/RedDays/reddays-hk-tc.ics">iPhone 點此直接添加</a></p>
   </div>
 
   <h2>民族与宗教</h2>
   <div class="cal">
     <h3>民族节日</h3>
-    <p>开斋节、古尔邦节（回历推算）、藏历新年（Phugpa 历法推算）、泼水节、火把节、彝历新年，全年约 8 条。伊斯兰节日日期以当地政府公告为准。</p>
+    <p>开斋节、古尔邦节、藏历新年、泼水节、火把节、彝历新年，全年约 8 条。</p>
     <p class="links"><a href="reddays-ethnic.ics">reddays-ethnic.ics</a><a href="webcal://ygnstudio.github.io/RedDays/reddays-ethnic.ics">iPhone 点此直接添加</a></p>
   </div>
   <div class="cal">
     <h3>回历每日</h3>
-    <p>每天一条带回历日期，斋月、开斋节、古尔邦节等纪念日写入标题。Umm al-Qura 历法换算。</p>
+    <p>每天一条带回历日期，斋月、开斋节、古尔邦节等纪念日写入标题。</p>
     <p class="links"><a href="reddays-hijri.ics">reddays-hijri.ics</a><a href="webcal://ygnstudio.github.io/RedDays/reddays-hijri.ics">iPhone 点此直接添加</a></p>
   </div>
   <div class="cal">
     <h3>基督教历</h3>
-    <p>复活节及受难节、升天节等关联节日（纯算法推算），加平安夜、圣诞节、主显节，全年 9 条。</p>
+    <p>复活节及受难节、升天节等关联节日，加平安夜、圣诞节、主显节，全年 9 条。</p>
     <p class="links"><a href="reddays-christian.ics">reddays-christian.ics</a><a href="webcal://ygnstudio.github.io/RedDays/reddays-christian.ics">iPhone 点此直接添加</a></p>
   </div>
 
@@ -500,17 +500,19 @@ INDEX_TEMPLATE = """<!doctype html>
     <h2>数据来源与权威性</h2>
     <p><strong>大陆法定节假日</strong>：国务院办公厅公告原文，事件描述附通知链接。</p>
     <p><strong>香港公众假期</strong>：香港特区政府 1823 官方名单。</p>
-    <p><strong>节气农历</strong>：天文算法推算，与国家标准 GB/T 33661-2017《农历的编算和颁行》（中科院紫金山天文台编算《中国天文年历》）同一体系。</p>
+    <p><strong>节气农历</strong>：天文算法推算，与国家标准《农历的编算和颁行》（中科院紫金山天文台）同一体系。</p>
     <p><strong>每日黄历</strong>：宜忌冲煞属民俗推演，没有官方标准，各流派说法不一，当传统文化参考。</p>
-    <p><strong>回历与民族节日</strong>：回历按沙特官方 Umm al-Qura 历法换算；开斋节、古尔邦节的正统机制是见月官宣，个别年份可能比推算晚一天，以当地公告为准。藏历新年按 Phugpa 传承历法推算，与西藏自治区藏医院《西藏天文气象历书》一致；泼水节、彝历新年按地方政府公告口径，火把节按农历六月二十四。</p>
-    <p><strong>基督教历</strong>：复活节日期由教会法固定算法（computus）规定，算出即官方日期；采用西方教会（天主教/新教）口径，东正教多数年份晚一周。</p>
+    <p><strong>回历</strong>：按沙特官方 Umm al-Qura 历法换算。开斋节、古尔邦节以见月官宣为准，个别年份可能比推算晚一天。</p>
+    <p><strong>民族节日</strong>：藏历新年与西藏自治区藏医院《西藏天文气象历书》一致；泼水节、彝历新年按地方政府公告口径；火把节按农历六月二十四。</p>
+    <p><strong>基督教历</strong>：复活节由教会法固定算法规定，算出即官方日期；西方教会口径，东正教多数年份不同。</p>
   </section>
 
   {data_status}<section class="how">
     <h2>添加方式</h2>
     <p>Mac：日历 → 文件 → 新建日历订阅（⌥⌘S），粘贴链接。</p>
     <p>iPhone/iPad：点上面的 webcal 链接；或到 设置 → Apps → 日历 → 日历账户 → 添加订阅日历，粘贴 https 链接。</p>
-    <p>Android（Google 日历）：手机或电脑浏览器打开 calendar.google.com，左上角 ＋ → 设置 → 添加日历 → 从网址，粘贴链接。订阅会自动同步到登录同一账号的手机日历。无法访问 Google 的设备，可换用任何支持「网址订阅」的日历应用，粘贴 https 链接即可。</p>
+    <p>Android（Google 日历）：浏览器打开 calendar.google.com，左上角 ＋ → 设置 → 添加日历 → 从网址，粘贴链接，订阅自动同步到同一账号的手机。</p>
+    <p>无法访问 Google 的设备，换用任何支持网址订阅的日历应用，粘贴 https 链接即可。</p>
   </section>
 
   <footer>原始数据（JSON）与源码：<a href="https://github.com/ygnstudio/RedDays">github.com/ygnstudio/RedDays</a></footer>
@@ -564,15 +566,11 @@ def data_status_html() -> str:
     return (
         "<section>\n"
         "  <h2>数据维护</h2>\n"
-        f"  <p>数据最近维护于 {last}。大陆假日与香港假期由 GitHub Actions "
-        "每日对照官方来源自动同步；历法类由天文算法每日滚动生成，无需人工。</p>\n"
-        f"  <p>当前数据范围：大陆法定节假日 {cn[0]}-{cn[-1]} 年；香港公众假期 "
-        f"{hk[0]}-{hk[-1]} 年；节气农历、回历每日、民族节日、基督教历为滚动窗口"
-        f"（当前 {rolling} 年）；每日黄历 {almanac} 年；藏历新年由 Phugpa 参考实现"
-        f"推算，覆盖 {losar[0]}-{losar[-1]} 年。</p>\n"
-        "  <p>新年份数据由机器校验把关（天数区间与同比偏差），校验通过即自动上线，"
-        "不过则拦下发布并开告警 issue。其余日历随每日运行自动推进窗口，"
-        "无需任何人工维护。</p>\n"
+        f"  <p>数据最近维护于 {last}，全部自动同步与生成，无需人工。</p>\n"
+        "  <p>当前数据范围：</p>\n"
+        f"  <p>大陆法定节假日 {cn[0]}-{cn[-1]} 年；香港公众假期 {hk[0]}-{hk[-1]} 年；"
+        f"节气农历、回历每日、民族节日、基督教历为滚动窗口（当前 {rolling} 年）；"
+        f"每日黄历 {almanac} 年；藏历新年覆盖 {losar[0]}-{losar[-1]} 年。</p>\n"
         "</section>\n\n"
     )
 
