@@ -79,7 +79,7 @@ def build_lunar_events(years):
                 desc = f"{year}年{name}"
                 if moment:
                     desc += f"，交节时刻 {moment}（北京时间）"
-                desc += "。二十四节气依天文算法推算。"
+                desc += "。二十四节气依天文算法推算，与国家标准《农历的编算和颁行》体系一致。"
                 uid = f"{day.strftime('%Y%m%d')}-jieqi@{UID_DOMAIN}"
                 if uid not in seen:
                     seen.add(uid)
@@ -134,6 +134,7 @@ def almanac_description(lunar) -> str:
         f"胎神占方：{lunar.getDayPositionTai()}",
         f"吉神宜趋：{_fmt_list(lunar.getDayJiShen())}",
         f"凶神宜忌：{_fmt_list(lunar.getDayXiongSha())}",
+        "宜忌冲煞为民俗推演，无官方标准，各流派说法不一，仅供参考。",
     ]
     return "\n".join(lines)
 

@@ -66,6 +66,14 @@ def test_almanac_description_fields(almanac_events_2026):
     sample = almanac_events_2026[100][3]
     for key in ("宜：", "忌：", "冲煞：", "彭祖百忌：", "胎神占方："):
         assert key in sample
+    # 黄历无官方标准，免责标注必须在每条事件里
+    for _, _, _, desc in almanac_events_2026:
+        assert "民俗推演" in desc and "无官方标准" in desc
+
+
+def test_lunar_jieqi_mentions_national_standard(lunar_events_2026):
+    lichun = [e for e in lunar_events_2026 if e[2] == "立春"]
+    assert "农历的编算和颁行" in lichun[0][3]
 
 
 def test_render_deterministic(lunar_events_2026, almanac_events_2026):
@@ -180,6 +188,16 @@ def test_ethnic_islamic_desc_carries_caveat():
     for _, _, summary, desc in events:
         if summary in ("开斋节", "古尔邦节"):
             assert "以当地政府公告为准" in desc
+        if summary == "藏历新年":
+            assert "天文气象历书" in desc
+        if summary == "复活节":
+            pass  # 基督教历在另一日历，见 test_christian_desc_mentions_computus
+
+
+def test_christian_desc_mentions_computus():
+    events = build_christian([2026])
+    easter = next(e for e in events if e[2] == "复活节")
+    assert "computus" in easter[3] and "西方教会" in easter[3]
 
 
 def test_hijri_daily_covers_full_year():
@@ -212,6 +230,9 @@ def test_landing_page_shows_data_status(tmp_path, monkeypatch):
     html = open(index, encoding="utf-8").read()
     assert "数据维护" in html
     assert "最近维护于" in html
+    # 权威性板块必须存在，且黄历如实标注没有官方标准
+    assert "数据来源与权威性" in html
+    assert "没有官方标准" in html
     cn = []
     for f in os.listdir(os.path.join("data")):
         if f.endswith(".json") and f[:4].isdigit():

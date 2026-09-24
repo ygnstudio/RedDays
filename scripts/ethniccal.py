@@ -138,7 +138,8 @@ def build_ethnic(years: list[int]) -> list:
                     date,
                     f"{date.strftime('%Y%m%d')}-ethnic-losar@{UID_DOMAIN}",
                     "藏历新年",
-                    "藏历正月初一（洛萨）。日期逐年经官方名单核实；"
+                    "藏历正月初一（洛萨），Phugpa 传承历法推算，"
+                    "与西藏自治区藏医院《西藏天文气象历书》一致；"
                     "西藏等地法定假日。",
                 )
             )
@@ -198,7 +199,10 @@ def build_christian(years: list[int]) -> list:
         e = easter(year)
         for offset, name, note in offset_days:
             date = e + dt.timedelta(days=offset)
-            desc = f"{year} 年复活节为 {e.isoformat()} 推算。" + (f"{note}。" if note else "")
+            desc = (
+                f"{year} 年复活节为 {e.isoformat()}，由教会法 computus "
+                "算法规定（西方教会口径，东正教多数年份不同）。"
+            ) + (f"{note}。" if note else "")
             events.append(
                 (
                     date,

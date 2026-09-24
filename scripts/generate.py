@@ -482,7 +482,7 @@ INDEX_TEMPLATE = """<!doctype html>
   <h2>民族与宗教</h2>
   <div class="cal">
     <h3>民族节日</h3>
-    <p>开斋节、古尔邦节（回历推算）、藏历新年（官方名单逐年核实）、泼水节、火把节、彝历新年，全年约 8 条。伊斯兰节日日期以当地政府公告为准。</p>
+    <p>开斋节、古尔邦节（回历推算）、藏历新年（Phugpa 历法推算）、泼水节、火把节、彝历新年，全年约 8 条。伊斯兰节日日期以当地政府公告为准。</p>
     <p class="links"><a href="reddays-ethnic.ics">reddays-ethnic.ics</a><a href="webcal://ygnstudio.github.io/RedDays/reddays-ethnic.ics">iPhone 点此直接添加</a></p>
   </div>
   <div class="cal">
@@ -495,6 +495,16 @@ INDEX_TEMPLATE = """<!doctype html>
     <p>复活节及受难节、升天节等关联节日（纯算法推算），加平安夜、圣诞节、主显节，全年 9 条。</p>
     <p class="links"><a href="reddays-christian.ics">reddays-christian.ics</a><a href="webcal://ygnstudio.github.io/RedDays/reddays-christian.ics">iPhone 点此直接添加</a></p>
   </div>
+
+  <section>
+    <h2>数据来源与权威性</h2>
+    <p><strong>大陆法定节假日</strong>：国务院办公厅公告原文，事件描述附通知链接。</p>
+    <p><strong>香港公众假期</strong>：香港特区政府 1823 官方名单。</p>
+    <p><strong>节气农历</strong>：天文算法推算，与国家标准 GB/T 33661-2017《农历的编算和颁行》（中科院紫金山天文台编算《中国天文年历》）同一体系。</p>
+    <p><strong>每日黄历</strong>：宜忌冲煞属民俗推演，没有官方标准，各流派说法不一，当传统文化参考。</p>
+    <p><strong>回历与民族节日</strong>：回历按沙特官方 Umm al-Qura 历法换算；开斋节、古尔邦节的正统机制是见月官宣，个别年份可能比推算晚一天，以当地公告为准。藏历新年按 Phugpa 传承历法推算，与西藏自治区藏医院《西藏天文气象历书》一致；泼水节、彝历新年按地方政府公告口径，火把节按农历六月二十四。</p>
+    <p><strong>基督教历</strong>：复活节日期由教会法固定算法（computus）规定，算出即官方日期；采用西方教会（天主教/新教）口径，东正教多数年份晚一周。</p>
+  </section>
 
   {data_status}<section class="how">
     <h2>添加方式</h2>
