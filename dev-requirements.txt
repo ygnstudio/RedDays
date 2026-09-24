@@ -1,6 +1,9 @@
-# 数据解析（scripts/govcn.py 需要）
+# 数据解析（scripts/govcn.py、scripts/hkholiday.py 需要）
 requests==2.34.2
 beautifulsoup4==4.15.0
+
+# 历法计算（scripts/lunarcal.py 需要，节气/农历/黄历全本地推算）
+lunar_python==1.4.8
 
 # 校验与测试
 icalendar==6.3.2

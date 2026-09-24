@@ -89,16 +89,16 @@ def fold_line(line: str) -> str:
 class CalendarWriter:
     """Minimal RFC 5545 writer with CRLF endings and line folding."""
 
-    def __init__(self):
+    def __init__(self, calname=None, tz=None, color=None):
         self.lines = [
             "BEGIN:VCALENDAR",
             "VERSION:2.0",
             "PRODID:" + PRODID,
             "CALSCALE:GREGORIAN",
             "METHOD:PUBLISH",
-            "X-WR-CALNAME:" + CONFIG["calendar_name"],
-            "X-WR-TIMEZONE:" + CONFIG["tz"],
-            "X-APPLE-CALENDAR-COLOR:" + CONFIG["calendar_color"],
+            "X-WR-CALNAME:" + (calname or CONFIG["calendar_name"]),
+            "X-WR-TIMEZONE:" + (tz or CONFIG["tz"]),
+            "X-APPLE-CALENDAR-COLOR:" + (color or CONFIG["calendar_color"]),
         ]
 
     def add(self, line: str):
@@ -429,6 +429,24 @@ INDEX_TEMPLATE = """<!doctype html>
     <h2>补班版</h2>
     <p>只含调休补班日，不含任何放假，带 09:00-18:00 时间和前一晚 21:00 的提醒。放假自己记得住、只怕忘了补班的人用。</p>
     <p><a href="reddays-workonly.ics">reddays-workonly.ics</a> · <a href="webcal://ygnstudio.github.io/RedDays/reddays-workonly.ics">iPhone 点此直接添加</a></p>
+  </section>
+
+  <section>
+    <h2>节气农历</h2>
+    <p>二十四节气（含交节时刻）加每月初一十五，农历日期写在标题里，全年约 48 条。天文算法本地推算，不用等任何机构发布。</p>
+    <p><a href="reddays-lunar.ics">reddays-lunar.ics</a> · <a href="webcal://ygnstudio.github.io/RedDays/reddays-lunar.ics">iPhone 点此直接添加</a></p>
+  </section>
+
+  <section>
+    <h2>每日黄历</h2>
+    <p>每天一条，标题是宜忌摘要，点开有完整宜忌、冲煞、彭祖百忌、胎神占方和吉凶神。信不信由你，当个传统文化日历用。</p>
+    <p><a href="reddays-almanac.ics">reddays-almanac.ics</a> · <a href="webcal://ygnstudio.github.io/RedDays/reddays-almanac.ics">iPhone 点此直接添加</a></p>
+  </section>
+
+  <section>
+    <h2>香港公众假期</h2>
+    <p>香港特区政府公布的公众假期名单（1823 官方数据），简体标题，官方繁体原名在描述里。港股、跨境安排用。</p>
+    <p><a href="reddays-hk.ics">reddays-hk.ics</a> · <a href="webcal://ygnstudio.github.io/RedDays/reddays-hk.ics">iPhone 点此直接添加</a></p>
   </section>
 
   <section class="how">

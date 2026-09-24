@@ -1,6 +1,6 @@
 # RedDays
 
-中国法定节假日的苹果日历订阅源，直连国务院公告解析，每日自动发布。日历里只有红日子（法定假日和调休补班），没有节气、农历和普通周末的噪音。
+中国法定节假日、香港公众假期与农历历法的苹果日历订阅源，直连官方公告解析，每日自动发布。日历里只有红日子（法定假日和调休补班），没有节气、农历和普通周末的噪音。
 
 **数据来源：[国务院办公厅放假通知](https://www.gov.cn/zhengce/)（国办发明电），CI 每日两次自动抓取解析。**
 
@@ -9,6 +9,9 @@
 - 逐日详细版：`https://ygnstudio.github.io/RedDays/reddays-detailed.ics`
 - 极简版：`https://ygnstudio.github.io/RedDays/reddays-minimal.ics`
 - 补班版：`https://ygnstudio.github.io/RedDays/reddays-workonly.ics`
+- 节气农历：`https://ygnstudio.github.io/RedDays/reddays-lunar.ics`
+- 每日黄历：`https://ygnstudio.github.io/RedDays/reddays-almanac.ics`
+- 香港公众假期：`https://ygnstudio.github.io/RedDays/reddays-hk.ics`
 
 ## 日历长什么样
 
@@ -42,6 +45,14 @@
 
 建议详细版和极简版都订，平时只开极简版，放假前打开详细版。补班版供单订补班提醒的人选用。
 
+## 另外三个日历
+
+| 日历 | 数据来源 | 内容 |
+|---|---|---|
+| **节气农历** | lunar_python 天文算法，本地推算，无外部数据源 | 二十四节气（含交节时刻）+ 每月初一十五，农历日期入标题，保留过去 1 年预生成未来 2 年 |
+| **每日黄历** | 同上 | 每天一条：标题为宜忌摘要，描述含完整宜忌、冲煞、彭祖百忌、胎神占方、吉凶神，保留当年与次年 |
+| **香港公众假期** | 香港特区政府 1823 官方 JSON（简繁双语），每年更新 | 全年公众假期，简体标题，官方繁体原名在描述里；新年份同样过人工审查门禁 |
+
 **添加方式**：macOS「日历 → 文件 → 新建日历订阅（⌥⌘S）」粘贴链接；或把 `https://` 换成 `webcal://` 直接点开。
 
 ## 工作原理
@@ -52,9 +63,13 @@ flowchart LR
     B -->|失败自动降级| C[Layer 2<br>本地快照]
     B --> D[generate.py<br>JSON → ICS ×3]
     C --> D
+    K[1823 官方 JSON<br>hkholiday.py] --> E[hkcal.py<br>香港假期 ICS]
+    L[lunar_python<br>天文算法本地推算] --> M[lunarcal.py<br>节气农历+黄历 ICS]
     D --> F[crosscheck.py<br>苹果官方比对]
-    F --> G[pytest<br>37 项门禁]
-    G --> H[GitHub Pages<br>订阅地址]
+    F --> G[pytest<br>离线测试门禁]
+    E --> G
+    M --> G
+    G --> P[GitHub Pages<br>订阅地址]
 ```
 
 每日北京 07:30 和 19:30 各跑一次；任何一步失败就不发布，并发邮件告警。

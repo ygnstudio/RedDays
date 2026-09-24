@@ -33,7 +33,17 @@ jobs:
         run: pip install -r dev-requirements.txt
 
       - name: Baseline generate (pre-sync)
-        run: python ./scripts/generate.py --out /tmp/ics-before
+        run: |
+          python ./scripts/generate.py --out /tmp/ics-before
+          python ./scripts/lunarcal.py --out /tmp/ics-before
+          python ./scripts/hkcal.py --out /tmp/ics-before
+
+      # 1823 拉取失败不阻断发布：data/hk/ 已提交版本即快照，
+      # 长期失联由 freshness guard（400 天）兜底。
+      # 必须在 sync.py 之前跑：新年份先落地再过门禁，顺序反了会漏检。
+      - name: Sync HK holidays (1823 official JSON)
+        continue-on-error: true
+        run: python ./scripts/hkholiday.py
 
       - name: Sync data (direct gov.cn + freshness guard)
         run: python ./scripts/sync.py
@@ -62,11 +72,14 @@ jobs:
           fi
 
       - name: Generate calendars
-        run: python ./scripts/generate.py --out dist
+        run: |
+          python ./scripts/generate.py --out dist
+          python ./scripts/lunarcal.py --out dist
+          python ./scripts/hkcal.py --out dist
 
       - name: Guard - data changed but calendars did not
         run: |
-          if git diff --exit-code --quiet -- 'data/[0-9][0-9][0-9][0-9].json'; then
+          if git diff --exit-code --quiet -- 'data/[0-9][0-9][0-9][0-9].json' 'data/hk/[0-9][0-9][0-9][0-9].json'; then
             echo "data unchanged"
           else
             if diff -r /tmp/ics-before dist > /dev/null 2>&1; then
@@ -87,7 +100,7 @@ jobs:
         run: |
           git config user.name "GitHub Actions"
           git config user.email "actions@users.noreply.github.com"
-          git add 'data/[0-9][0-9][0-9][0-9].json'
+          git add 'data/[0-9][0-9][0-9][0-9].json' 'data/hk/[0-9][0-9][0-9][0-9].json'
           if git diff --cached --quiet; then
             echo "no data changes to commit"
           else

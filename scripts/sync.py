@@ -62,7 +62,15 @@ def sync_layer1(years):
 
 def check_freshness():
     out = subprocess.run(
-        ["git", "log", "-1", "--format=%cI", "--", "data/[0-9][0-9][0-9][0-9].json"],
+        [
+            "git",
+            "log",
+            "-1",
+            "--format=%cI",
+            "--",
+            "data/[0-9][0-9][0-9][0-9].json",
+            "data/hk/[0-9][0-9][0-9][0-9].json",
+        ],
         capture_output=True,
         text=True,
         cwd=workspace_path(),
@@ -161,6 +169,64 @@ def detect_pending(years, approved=None, head_reader=None) -> list[int]:
     return pending
 
 
+# ---------------------------------------------------------------- 香港公众假期
+
+
+def hk_head_content(year: int) -> str | None:
+    """读取 git HEAD 中香港某年数据文件内容；文件不存在时返回 None。"""
+    out = subprocess.run(
+        ["git", "show", f"HEAD:data/hk/{year}.json"],
+        capture_output=True,
+        text=True,
+        cwd=workspace_path(),
+    )
+    return out.stdout if out.returncode == 0 else None
+
+
+def _read_hk_days(year: int) -> list[dict]:
+    with open(workspace_path("data", "hk", f"{year}.json"), encoding="utf-8") as f:
+        return json.load(f).get("days", [])
+
+
+def detect_hk_pending(approved=None, head_reader=None) -> list[int]:
+    """香港年份门禁：未放行且相对 HEAD 有变化的年份。"""
+    approved = load_approved() if approved is None else approved
+    head_reader = head_reader or hk_head_content
+    sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
+    from hkholiday import load_years  # noqa: E402
+
+    pending = []
+    for year in load_years():
+        if year in approved:
+            continue
+        days = _read_hk_days(year)
+        if not days:
+            continue
+        old = head_reader(year)
+        old_days = json.loads(old).get("days", []) if old else []
+        if old_days != days:
+            pending.append(year)
+    return pending
+
+
+def render_hk_pending(pending_years) -> str:
+    """香港待审报告：官方名单短，直接全量列出便于逐条核对。"""
+    parts = [
+        "香港公众假期新年份数据已同步但被 hold，需人工确认。",
+        "",
+        "数据源是香港特区政府 1823 官方 JSON（结构化名单，非正文解析），",
+        "核对下方名单与 https://www.gov.hk/sc/about/aboutholiday.htm 一致后，",
+        "把年份加入 `data/approved.txt` 放行。",
+    ]
+    for year in pending_years:
+        days = _read_hk_days(year)
+        parts.append("")
+        parts.append(f"## 香港 {year} 年（共 {len(days)} 天）")
+        for d in days:
+            parts.append(f"- {d['date']} {d['name']}（{d['name_zh_hk']}）")
+    return "\n".join(parts) + "\n"
+
+
 def summarize_days(days) -> list[str]:
     """把单日条目聚成「区间行」：连续同节日同真假合并为一行。"""
     import datetime as _dt
@@ -252,12 +318,22 @@ def main():
     check_seasonal()
 
     pending = detect_pending(years)
-    if pending:
-        content = render_pending(pending, layer)
+    try:
+        pending_hk = detect_hk_pending()
+    except FileNotFoundError:
+        pending_hk = []
+    if pending or pending_hk:
+        parts = []
+        if pending:
+            parts.append(render_pending(pending, layer).rstrip("\n"))
+        if pending_hk:
+            parts.append(render_hk_pending(pending_hk).rstrip("\n"))
+        content = "\n\n".join(parts) + "\n"
         os.makedirs(os.path.dirname(args.pending_file), exist_ok=True)
         with open(args.pending_file, "w", encoding="utf-8") as f:
             f.write(content)
-        print(f"review: PENDING human approval for {pending}; workflow will hold")
+        held = pending + pending_hk
+        print(f"review: PENDING human approval for {held}; workflow will hold")
     else:
         print("review: ok (no unapproved year changes)")
     return 0

@@ -1,0 +1,92 @@
+{
+    "$id": "https://raw.githubusercontent.com/ygnstudio/RedDays/master/data/hk/2027.json",
+    "year": 2027,
+    "source": "https://www.1823.gov.hk/common/ical/sc.json",
+    "days": [
+        {
+            "date": "2027-01-01",
+            "name": "一月一日",
+            "name_zh_hk": "一月一日"
+        },
+        {
+            "date": "2027-02-06",
+            "name": "农历年初一",
+            "name_zh_hk": "農曆年初一"
+        },
+        {
+            "date": "2027-02-08",
+            "name": "农历年初三",
+            "name_zh_hk": "農曆年初三"
+        },
+        {
+            "date": "2027-02-09",
+            "name": "农历年初四",
+            "name_zh_hk": "農曆年初四"
+        },
+        {
+            "date": "2027-03-26",
+            "name": "耶稣受难节",
+            "name_zh_hk": "耶穌受難節"
+        },
+        {
+            "date": "2027-03-27",
+            "name": "耶稣受难节翌日",
+            "name_zh_hk": "耶穌受難節翌日"
+        },
+        {
+            "date": "2027-03-29",
+            "name": "复活节星期一",
+            "name_zh_hk": "復活節星期一"
+        },
+        {
+            "date": "2027-04-05",
+            "name": "清明节",
+            "name_zh_hk": "清明節"
+        },
+        {
+            "date": "2027-05-01",
+            "name": "劳动节",
+            "name_zh_hk": "勞動節"
+        },
+        {
+            "date": "2027-05-13",
+            "name": "佛诞",
+            "name_zh_hk": "佛誕"
+        },
+        {
+            "date": "2027-06-09",
+            "name": "端午节",
+            "name_zh_hk": "端午節"
+        },
+        {
+            "date": "2027-07-01",
+            "name": "香港特别行政区成立纪念日",
+            "name_zh_hk": "香港特別行政區成立紀念日"
+        },
+        {
+            "date": "2027-09-16",
+            "name": "中秋节翌日",
+            "name_zh_hk": "中秋節翌日"
+        },
+        {
+            "date": "2027-10-01",
+            "name": "国庆日",
+            "name_zh_hk": "國慶日"
+        },
+        {
+            "date": "2027-10-08",
+            "name": "重阳节",
+            "name_zh_hk": "重陽節"
+        },
+        {
+            "date": "2027-12-25",
+            "name": "圣诞节",
+            "name_zh_hk": "聖誕節"
+        },
+        {
+            "date": "2027-12-27",
+            "name": "圣诞节后第一个周日",
+            "name_zh_hk": "聖誕節後第一個周日"
+        }
+    ]
+}
