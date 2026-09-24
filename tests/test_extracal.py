@@ -188,3 +188,24 @@ def test_christian_key_dates_2026():
     assert ("2026-04-03", "耶稣受难节") in got
     assert ("2026-12-25", "圣诞节") in got
     assert len(events) == 9
+
+
+def test_landing_page_shows_data_status(tmp_path, monkeypatch):
+    """落地页必须有数据维护板块，且年份范围来自 data 目录实读。"""
+    import os
+    import sys
+
+    sys.path.insert(0, os.path.abspath("scripts"))
+    import generate
+
+    outputs = generate.write_all(str(tmp_path))
+    index = next(p for p in outputs if p.endswith("index.html"))
+    html = open(index, encoding="utf-8").read()
+    assert "数据维护" in html
+    assert "最近维护于" in html
+    cn = sorted(
+        int(f[:4])
+        for f in os.listdir(os.path.join("data"))
+        if f.endswith(".json")
+    )
+    assert f"{cn[0]}-{cn[-1]} 年" in html

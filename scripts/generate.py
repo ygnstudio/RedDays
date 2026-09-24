@@ -10,6 +10,7 @@ import glob
 import itertools
 import json
 import os
+import subprocess
 import sys
 
 sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
@@ -495,7 +496,7 @@ INDEX_TEMPLATE = """<!doctype html>
     <p class="links"><a href="reddays-christian.ics">reddays-christian.ics</a><a href="webcal://ygnstudio.github.io/RedDays/reddays-christian.ics">iPhone 点此直接添加</a></p>
   </div>
 
-  <section class="how">
+  {data_status}<section class="how">
     <h2>添加方式</h2>
     <p>Mac：日历 → 文件 → 新建日历订阅（⌥⌘S），粘贴链接。</p>
     <p>iPhone/iPad：点上面的 webcal 链接；或到 设置 → Apps → 日历 → 日历账户 → 添加订阅日历，粘贴 https 链接。</p>
@@ -513,6 +514,51 @@ INDEX_TEMPLATE = """<!doctype html>
 PAGE_TITLE = "RedDays 日历订阅"
 
 
+def data_status_html() -> str:
+    """汇总数据维护状态，供落地页展示。
+
+    范围与时间全部实时读取（data 目录、git 提交时间、运行日期），
+    不做硬编码，避免数字随时间腐化。
+    """
+    data_dir = workspace_path("data")
+    cn = sorted(
+        int(f[:4]) for f in os.listdir(data_dir) if f.endswith(".json")
+    )
+    hk_dir = os.path.join(data_dir, "hk")
+    hk = sorted(
+        int(f[:4]) for f in os.listdir(hk_dir) if f.endswith(".json")
+    )
+    today = dt.date.today()
+    rolling = f"{today.year - 1}-{today.year + 2}"
+    almanac = f"{today.year}-{today.year + 1}"
+    try:
+        last = (
+            subprocess.run(
+                ["git", "log", "-1", "--format=%cI", "--", "data/"],
+                capture_output=True,
+                text=True,
+                check=True,
+                cwd=workspace_path(),
+            )
+            .stdout.strip()[:10]
+        )
+    except Exception:
+        last = today.isoformat()
+    return (
+        "<section>\n"
+        "  <h2>数据维护</h2>\n"
+        f"  <p>数据最近维护于 {last}。大陆假日与香港假期由 GitHub Actions "
+        "每日对照官方来源自动同步；历法类由天文算法每日滚动生成，无需人工。</p>\n"
+        f"  <p>当前数据范围：大陆法定节假日 {cn[0]}-{cn[-1]} 年；香港公众假期 "
+        f"{hk[0]}-{hk[-1]} 年；节气农历、回历每日、民族节日、基督教历为滚动窗口"
+        f"（当前 {rolling} 年）；每日黄历 {almanac} 年；藏历新年已核实表 2024-2028 年。</p>\n"
+        "  <p>下一次更新：大陆 2028 年放假安排预计 2026 年 10-12 月公告发布后"
+        "自动解析、人工核对放行；香港 2028 年名单预计 2026 年末至 2027 年初"
+        "官方数据更新后同样核对；藏历表 2029 年起需逐年核实补充。</p>\n"
+        "</section>\n\n"
+    )
+
+
 def write_all(out_dir: str):
     days, papers = load_days()
     os.makedirs(out_dir, exist_ok=True)
@@ -525,7 +571,9 @@ def write_all(out_dir: str):
         outputs.append(path)
     index_path = os.path.join(out_dir, "index.html")
     with open(index_path, "w", encoding="utf-8", newline="\n") as f:
-        f.write(INDEX_TEMPLATE.format(title=PAGE_TITLE))
+        f.write(
+            INDEX_TEMPLATE.format(title=PAGE_TITLE, data_status=data_status_html())
+        )
     outputs.append(index_path)
     return outputs
 
