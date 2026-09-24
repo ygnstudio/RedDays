@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
-"""香港公众假期 ICS 生成：读取 data/hk/*.json，产出 reddays-hk.ics。"""
+"""香港公众假期 ICS 生成：读取 data/hk/*.json，产出简繁两版。
+
+- reddays-hk.ics：简体标题（reddays-hk-tc.ics 为繁体标题版）
+两版 UID 不同，可同时订阅；标题语言互补地写进对方描述。
+"""
 
 import argparse
 import datetime as dt
@@ -14,6 +18,12 @@ sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
 from hkholiday import load_years  # noqa: E402
 from generate import CalendarWriter, UID_DOMAIN  # noqa: E402
 
+# variant -> (文件名, 日历名, 标题字段, 描述中的对照字段, 对照标签)
+VARIANTS = {
+    "sc": ("reddays-hk.ics", "香港公众假期", "name", "name_zh_hk", "官方繁体"),
+    "tc": ("reddays-hk-tc.ics", "香港公眾假期", "name_zh_hk", "name", "簡體"),
+}
+
 
 def load_days() -> list[dict]:
     days = []
@@ -24,20 +34,28 @@ def load_days() -> list[dict]:
     return days
 
 
-def build_events(days):
+def build_events(days, variant: str):
+    _, _, title_field, ref_field, ref_label = VARIANTS[variant]
     events = []
     for day in days:
         date = dt.date.fromisoformat(day["date"])
-        desc_lines = [f"官方繁体：{day['name_zh_hk']}" if day["name_zh_hk"] != day["name"] else ""]
+        other = day[ref_field]
+        desc_lines = [f"{ref_label}：{other}" if other != day[title_field] else ""]
         desc_lines.append("依据香港特区政府公布的公众假期名单（1823）")
         desc = "\n".join(x for x in desc_lines if x)
-        events.append((date, f"{date.strftime('%Y%m%d')}-off-hk@{UID_DOMAIN}",
-                       day["name"], desc))
+        events.append(
+            (
+                date,
+                f"{date.strftime('%Y%m%d')}-off-hk-{variant}@{UID_DOMAIN}",
+                day[title_field],
+                desc,
+            )
+        )
     return events
 
 
-def render(events) -> str:
-    writer = CalendarWriter(calname="香港公众假期", tz="Asia/Hong_Kong", color="#7BA7D9")
+def render(events, calname: str) -> str:
+    writer = CalendarWriter(calname=calname, tz="Asia/Hong_Kong", color="#7BA7D9")
     for date, uid, summary, desc in events:
         nxt = (date + dt.timedelta(days=1)).strftime("%Y%m%d")
         writer.lines.append("BEGIN:VEVENT")
@@ -54,16 +72,24 @@ def render(events) -> str:
     return writer.render()
 
 
+def write_all(out_dir: str) -> list[str]:
+    os.makedirs(out_dir, exist_ok=True)
+    days = load_days()
+    outputs = []
+    for variant, (filename, calname, _, _, _) in VARIANTS.items():
+        path = os.path.join(out_dir, filename)
+        with open(path, "w", encoding="utf-8", newline="") as f:
+            f.write(render(build_events(days, variant), calname))
+        outputs.append(path)
+    return outputs
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--out", default=workspace_path("dist"))
     args = parser.parse_args()
-    events = build_events(load_days())
-    os.makedirs(args.out, exist_ok=True)
-    path = os.path.join(args.out, "reddays-hk.ics")
-    with open(path, "w", encoding="utf-8", newline="") as f:
-        f.write(render(events))
-    print(f"generated: {path}")
+    for path in write_all(args.out):
+        print(f"generated: {path}")
 
 
 if __name__ == "__main__":

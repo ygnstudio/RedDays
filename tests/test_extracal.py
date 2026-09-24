@@ -11,6 +11,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..",
 from lunarcal import build_almanac_events, build_lunar_events, render  # noqa: E402
 from hkcal import build_events as hk_build_events  # noqa: E402
 from hkcal import render as hk_render  # noqa: E402
+from hkcal import write_all as hk_write_all  # noqa: E402
 
 
 @pytest.fixture(scope="module")
@@ -90,19 +91,41 @@ def hk_days(tmp_path):
 
 
 def test_hk_events_use_simplified_with_traditional_desc(hk_days):
-    events = hk_build_events(hk_days)
+    events = hk_build_events(hk_days, "sc")
     by_summary = {e[2]: e for e in events}
     assert set(by_summary) == {"一月一日", "圣诞节"}
     christmas = by_summary["圣诞节"]
-    assert "聖誕節" in christmas[3]
+    assert "官方繁体：聖誕節" in christmas[3]
     assert "香港特区政府" in christmas[3]
 
 
+def test_hk_tc_variant_flips_title(hk_days):
+    events = hk_build_events(hk_days, "tc")
+    by_summary = {e[2]: e for e in events}
+    assert set(by_summary) == {"一月一日", "聖誕節"}
+    christmas = by_summary["聖誕節"]
+    assert "簡體：圣诞节" in christmas[3]
+
+
 def test_hk_render_has_events(hk_days):
-    text = hk_render(hk_build_events(hk_days))
+    text = hk_render(hk_build_events(hk_days, "sc"), "香港公众假期")
     assert text.count("BEGIN:VEVENT") == 2
     assert "X-WR-CALNAME:香港公众假期" in text
-    assert "-off-hk@reddays" in text
+    assert "-off-hk-sc@reddays" in text
+
+
+def test_hk_write_all_emits_both_variants(hk_days, tmp_path, monkeypatch):
+    import hkcal
+
+    monkeypatch.setattr(hkcal, "load_days", lambda: hk_days)
+    outputs = hk_write_all(str(tmp_path))
+    names = {os.path.basename(p) for p in outputs}
+    assert names == {"reddays-hk.ics", "reddays-hk-tc.ics"}
+    sc = (tmp_path / "reddays-hk.ics").read_text(encoding="utf-8")
+    tc = (tmp_path / "reddays-hk-tc.ics").read_text(encoding="utf-8")
+    assert "SUMMARY:圣诞节" in sc and "SUMMARY:聖誕節" in tc
+    assert "X-WR-CALNAME:香港公眾假期" in tc
+    assert "-off-hk-tc@reddays" in tc
 
 
 def test_hk_gate_detects_unapproved_change(tmp_path, monkeypatch):

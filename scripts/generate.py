@@ -445,8 +445,9 @@ INDEX_TEMPLATE = """<!doctype html>
 
   <section>
     <h2>香港公众假期</h2>
-    <p>香港特区政府公布的公众假期名单（1823 官方数据），简体标题，官方繁体原名在描述里。港股、跨境安排用。</p>
-    <p><a href="reddays-hk.ics">reddays-hk.ics</a> · <a href="webcal://ygnstudio.github.io/RedDays/reddays-hk.ics">iPhone 点此直接添加</a></p>
+    <p>香港特区政府公布的公众假期名单（1823 官方数据），分简体和繁体两个版本，标题语言互补地写在对方描述里。港股、跨境安排用。</p>
+    <p><a href="reddays-hk.ics">reddays-hk.ics</a>（简体） · <a href="webcal://ygnstudio.github.io/RedDays/reddays-hk.ics">iPhone 添加简体版</a></p>
+    <p><a href="reddays-hk-tc.ics">reddays-hk-tc.ics</a>（繁體） · <a href="webcal://ygnstudio.github.io/RedDays/reddays-hk-tc.ics">iPhone 添加繁體版</a></p>
   </section>
 
   <section class="how">

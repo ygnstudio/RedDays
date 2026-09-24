@@ -11,7 +11,7 @@
 - 补班版：`https://ygnstudio.github.io/RedDays/reddays-workonly.ics`
 - 节气农历：`https://ygnstudio.github.io/RedDays/reddays-lunar.ics`
 - 每日黄历：`https://ygnstudio.github.io/RedDays/reddays-almanac.ics`
-- 香港公众假期：`https://ygnstudio.github.io/RedDays/reddays-hk.ics`
+- 香港公众假期：`https://ygnstudio.github.io/RedDays/reddays-hk.ics`（简体）、`https://ygnstudio.github.io/RedDays/reddays-hk-tc.ics`（繁體）
 
 ## 日历长什么样
 
@@ -51,7 +51,7 @@
 |---|---|---|
 | **节气农历** | lunar_python 天文算法，本地推算，无外部数据源 | 二十四节气（含交节时刻）+ 每月初一十五，农历日期入标题，保留过去 1 年预生成未来 2 年 |
 | **每日黄历** | 同上 | 每天一条：标题为宜忌摘要，描述含完整宜忌、冲煞、彭祖百忌、胎神占方、吉凶神，保留当年与次年 |
-| **香港公众假期** | 香港特区政府 1823 官方 JSON（简繁双语），每年更新 | 全年公众假期，简体标题，官方繁体原名在描述里；新年份同样过人工审查门禁 |
+| **香港公众假期** | 香港特区政府 1823 官方 JSON（简繁双语），每年更新 | 全年公众假期，分简体（`reddays-hk.ics`）与繁体（`reddays-hk-tc.ics`）两版，标题语言互补地写进对方描述；新年份同样过人工审查门禁 |
 
 **添加方式**：macOS「日历 → 文件 → 新建日历订阅（⌥⌘S）」粘贴链接；或把 `https://` 换成 `webcal://` 直接点开。
 
