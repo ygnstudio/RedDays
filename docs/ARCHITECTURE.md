@@ -6,7 +6,7 @@
 |---|---|---|
 | `scripts/govcn.py` | gov.cn 搜索接口找通知 → 抽正文 → 两阶段定年解析中文句式为结构化假期数据 | requests, bs4 |
 | `scripts/sync.py` | 数据同步编排：直连解析 + 快照降级 + 双重守卫，输出同步状态供 CI 判断 | 标准库（layer1 间接依赖 govcn.py） |
-| `scripts/generate.py` | JSON → 双版本 ICS；RFC 5545 折行/转义自实现 | 纯标准库 |
+| `scripts/generate.py` | JSON → 三版本 ICS；RFC 5545 折行/转义自实现 | 纯标准库 |
 | `scripts/crosscheck.py` | 拉苹果官方 cn_zh 日历，比对补班日集合（发布门禁） | 标准库 |
 | `config.py` | 全部展示偏好：命名模板、补班时间、提醒、颜色、描述开关 | 无 |
 | `publish.yml` | 编排整个链路并部署 GitHub Pages | 无 |

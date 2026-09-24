@@ -24,4 +24,14 @@ CONFIG = {
         "work_alarm_min": None,
         "attach_papers": False,
     },
+    # 补班版：只有调休补班日，不含任何放假
+    "workonly": {
+        "off_pattern": "{name} 假 {i}/{n}",  # skip_off_days 下不产出，仅为键完整
+        "work_pattern": "{name} 补 {i}/{n}",
+        "work_time": ("09:00", "18:00"),
+        "work_alarm_min": 720,
+        "attach_papers": True,
+        "rich_description": True,
+        "skip_off_days": True,
+    },
 }

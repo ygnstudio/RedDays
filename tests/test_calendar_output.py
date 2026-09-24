@@ -86,6 +86,29 @@ def test_render_deterministic(data):
     assert render_calendar(days, papers, "minimal") == render_calendar(
         days, papers, "minimal"
     )
+    assert render_calendar(days, papers, "workonly") == render_calendar(
+        days, papers, "workonly"
+    )
+
+
+def test_workonly_has_no_off_events(data):
+    days, _ = data
+    workonly = build_events(days, {}, "workonly")
+    summaries = [
+        line.split(":", 1)[-1] for block in workonly for line in block
+        if line.startswith("SUMMARY:")
+    ]
+    assert summaries and all(" 假 " not in s for s in summaries)
+    work_dates = {
+        line.split(":", 1)[-1].strip()[:8]
+        for block in workonly
+        for line in block
+        if line.startswith("DTSTART")
+    }
+    expected = {
+        d["date"].replace("-", "") for d in days if not d["isOffDay"]
+    }
+    assert work_dates == expected
 
 
 def test_uid_stable_across_runs(data):

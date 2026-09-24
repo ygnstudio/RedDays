@@ -301,6 +301,8 @@ def build_events(days, papers, variant: str):
     }
     events = []
     for name, is_off, run in iter_runs(days):
+        if is_off and cfg.get("skip_off_days"):
+            continue
         total = len(run)
         for i, item in enumerate(run, 1):
             kind = "off" if is_off else "work"
@@ -423,6 +425,12 @@ INDEX_TEMPLATE = """<!doctype html>
     <p><a href="reddays-minimal.ics">reddays-minimal.ics</a> · <a href="webcal://ygnstudio.github.io/RedDays/reddays-minimal.ics">iPhone 点此直接添加</a></p>
   </section>
 
+  <section>
+    <h2>补班版</h2>
+    <p>只含调休补班日，不含任何放假，带 09:00-18:00 时间和前一晚 21:00 的提醒。放假自己记得住、只怕忘了补班的人用。</p>
+    <p><a href="reddays-workonly.ics">reddays-workonly.ics</a> · <a href="webcal://ygnstudio.github.io/RedDays/reddays-workonly.ics">iPhone 点此直接添加</a></p>
+  </section>
+
   <section class="how">
     <h2>添加方式</h2>
     <p>Mac：日历 → 文件 → 新建日历订阅（⌥⌘S），粘贴链接。</p>
@@ -441,7 +449,7 @@ def write_all(out_dir: str):
     days, papers = load_days()
     os.makedirs(out_dir, exist_ok=True)
     outputs = []
-    for variant in ("detailed", "minimal"):
+    for variant in ("detailed", "minimal", "workonly"):
         path = os.path.join(out_dir, f"reddays-{variant}.ics")
         content = render_calendar(days, papers, variant)
         with open(path, "w", encoding="utf-8", newline="") as f:

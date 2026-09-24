@@ -8,6 +8,7 @@
 
 - 逐日详细版：`https://ygnstudio.github.io/RedDays/reddays-detailed.ics`
 - 极简版：`https://ygnstudio.github.io/RedDays/reddays-minimal.ics`
+- 补班版：`https://ygnstudio.github.io/RedDays/reddays-workonly.ics`
 
 ## 日历长什么样
 
@@ -31,14 +32,15 @@
 
 补班事件描述含：为哪个假期调休（范围+天数）、共补几天与日期清单、此为第几天、下一次补班是哪天（跨年自动带年份）、公告原文链接。
 
-## 两个版本怎么选
+## 三个版本怎么选
 
 | 版本 | 内容 | 适合 |
 |---|---|---|
 | **详细版** | 假期每天一条（`春节 假 2/9`），补班带 09:00-18:00 时间与前一晚 21:00 提醒 | 临近假期看进度、补班闹钟 |
 | **极简版** | 仅假期首日（`春节（休）`）与补班日（`春节（班）`），全年约 13 条 | 平时保持日历干净 |
+| **补班版** | 只有调休补班日（`春节 补 1/2`），不含任何放假，同样带时间与提醒 | 放假自己记得住、只怕忘了补班 |
 
-建议两个都订，平时只开极简版，放假前打开详细版。
+建议详细版和极简版都订，平时只开极简版，放假前打开详细版。补班版供单订补班提醒的人选用。
 
 **添加方式**：macOS「日历 → 文件 → 新建日历订阅（⌥⌘S）」粘贴链接；或把 `https://` 换成 `webcal://` 直接点开。
 
@@ -48,7 +50,7 @@
 flowchart LR
     A[国务院公告<br>gov.cn] -->|govcn.py<br>解析正文| B[Layer 1<br>直连解析]
     B -->|失败自动降级| C[Layer 2<br>本地快照]
-    B --> D[generate.py<br>JSON → 双 ICS]
+    B --> D[generate.py<br>JSON → ICS ×3]
     C --> D
     D --> F[crosscheck.py<br>苹果官方比对]
     F --> G[pytest<br>37 项门禁]
