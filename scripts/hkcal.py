@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """香港公众假期 ICS 生成：读取 data/hk/*.json，产出简繁两版。
 
-- reddays-hk.ics：简体标题（reddays-hk-tc.ics 为繁体标题版）
-两版 UID 不同，可同时订阅；标题语言互补地写进对方描述。
+- reddays-hk.ics：简体标题与描述（reddays-hk-tc.ics 为繁体标题与描述）
+两版 UID 不同，可同时订阅；每版的文字整体保持同一种语言。
 """
 
 import argparse
@@ -18,10 +18,15 @@ sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
 from hkholiday import load_years  # noqa: E402
 from generate import CalendarWriter, UID_DOMAIN  # noqa: E402
 
-# variant -> (文件名, 日历名, 标题字段, 描述中的对照字段, 对照标签)
+# variant -> (文件名, 日历名, 标题字段, 来源说明)
 VARIANTS = {
-    "sc": ("reddays-hk.ics", "香港公众假期", "name", "name_zh_hk", "官方繁体"),
-    "tc": ("reddays-hk-tc.ics", "香港公眾假期", "name_zh_hk", "name", "簡體"),
+    "sc": ("reddays-hk.ics", "香港公众假期", "name", "依据香港特区政府公布的公众假期名单（1823）"),
+    "tc": (
+        "reddays-hk-tc.ics",
+        "香港公眾假期",
+        "name_zh_hk",
+        "依據香港特區政府公布的公眾假期名單（1823）",
+    ),
 }
 
 
@@ -35,20 +40,16 @@ def load_days() -> list[dict]:
 
 
 def build_events(days, variant: str):
-    _, _, title_field, ref_field, ref_label = VARIANTS[variant]
+    _, _, title_field, source_note = VARIANTS[variant]
     events = []
     for day in days:
         date = dt.date.fromisoformat(day["date"])
-        other = day[ref_field]
-        desc_lines = [f"{ref_label}：{other}" if other != day[title_field] else ""]
-        desc_lines.append("依据香港特区政府公布的公众假期名单（1823）")
-        desc = "\n".join(x for x in desc_lines if x)
         events.append(
             (
                 date,
                 f"{date.strftime('%Y%m%d')}-off-hk-{variant}@{UID_DOMAIN}",
                 day[title_field],
-                desc,
+                source_note,
             )
         )
     return events
@@ -76,7 +77,7 @@ def write_all(out_dir: str) -> list[str]:
     os.makedirs(out_dir, exist_ok=True)
     days = load_days()
     outputs = []
-    for variant, (filename, calname, _, _, _) in VARIANTS.items():
+    for variant, (filename, calname, _, _) in VARIANTS.items():
         path = os.path.join(out_dir, filename)
         with open(path, "w", encoding="utf-8", newline="") as f:
             f.write(render(build_events(days, variant), calname))

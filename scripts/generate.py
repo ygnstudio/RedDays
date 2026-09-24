@@ -380,28 +380,50 @@ INDEX_TEMPLATE = """<!doctype html>
     margin: 0 0 44px;
     color: #6b6a61;
   }}
-  section {{
-    border-top: 1px solid #d9d6c8;
-    padding: 22px 0 30px;
-  }}
   h2 {{
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    color: #6b6a61;
+    border-bottom: 1px solid #d9d6c8;
+    padding-bottom: 8px;
+    margin: 52px 0 4px;
+  }}
+  .cal {{
+    padding: 16px 0 6px;
+  }}
+  .cal h3 {{
     font-size: 18px;
     font-weight: 600;
-    margin: 0 0 8px;
+    color: #1B365D;
+    margin: 0 0 4px;
   }}
-  p {{
-    margin: 0 0 10px;
+  .cal p {{
+    margin: 0 0 6px;
+  }}
+  .links {{
+    font-size: 15px;
   }}
   .how {{
     color: #6b6a61;
+  }}
+  .how h2 {{
+    color: #6b6a61;
+  }}
+  p {{
+    margin: 0 0 10px;
   }}
   a {{
     color: #1B365D;
     text-decoration: none;
     border-bottom: 1px solid #b9c4d4;
   }}
+  .links a + a {{
+    margin-left: 14px;
+  }}
   footer {{
     border-top: 1px solid #d9d6c8;
+    margin-top: 52px;
     padding-top: 18px;
     color: #6b6a61;
     font-size: 14px;
@@ -411,44 +433,48 @@ INDEX_TEMPLATE = """<!doctype html>
 <body>
 <main>
   <h1>{title}</h1>
-  <p class="sub">数据出自国务院办公厅历年公告，由 GitHub Actions 每日自动解析发布。</p>
+  <p class="sub">官方公告与天文历法算法，GitHub Actions 每日自动发布。以下订阅按需选订，互不冲突。</p>
 
-  <section>
-    <h2>逐日详细版</h2>
+  <h2>中国大陆法定节假日</h2>
+  <div class="cal">
+    <h3>逐日详细版</h3>
     <p>假期每天一条（春节 假 2/9），补班带 09:00-18:00 时间和前一晚 21:00 的提醒。放假前后开着看进度用。</p>
-    <p><a href="reddays-detailed.ics">reddays-detailed.ics</a> · <a href="webcal://ygnstudio.github.io/RedDays/reddays-detailed.ics">iPhone 点此直接添加</a></p>
-  </section>
-
-  <section>
-    <h2>极简版</h2>
-    <p>只有假期首日和补班日，全年约 13 条，日历保持干净。建议两个都订，平时只开极简版。</p>
-    <p><a href="reddays-minimal.ics">reddays-minimal.ics</a> · <a href="webcal://ygnstudio.github.io/RedDays/reddays-minimal.ics">iPhone 点此直接添加</a></p>
-  </section>
-
-  <section>
-    <h2>补班版</h2>
+    <p class="links"><a href="reddays-detailed.ics">reddays-detailed.ics</a><a href="webcal://ygnstudio.github.io/RedDays/reddays-detailed.ics">iPhone 点此直接添加</a></p>
+  </div>
+  <div class="cal">
+    <h3>极简版</h3>
+    <p>只有假期首日和补班日，全年约 13 条，日历保持干净。建议与详细版都订，平时只开极简版。</p>
+    <p class="links"><a href="reddays-minimal.ics">reddays-minimal.ics</a><a href="webcal://ygnstudio.github.io/RedDays/reddays-minimal.ics">iPhone 点此直接添加</a></p>
+  </div>
+  <div class="cal">
+    <h3>补班版</h3>
     <p>只含调休补班日，不含任何放假，带 09:00-18:00 时间和前一晚 21:00 的提醒。放假自己记得住、只怕忘了补班的人用。</p>
-    <p><a href="reddays-workonly.ics">reddays-workonly.ics</a> · <a href="webcal://ygnstudio.github.io/RedDays/reddays-workonly.ics">iPhone 点此直接添加</a></p>
-  </section>
+    <p class="links"><a href="reddays-workonly.ics">reddays-workonly.ics</a><a href="webcal://ygnstudio.github.io/RedDays/reddays-workonly.ics">iPhone 点此直接添加</a></p>
+  </div>
 
-  <section>
-    <h2>节气农历</h2>
+  <h2>历法</h2>
+  <div class="cal">
+    <h3>节气农历</h3>
     <p>二十四节气（含交节时刻）加每月初一十五，农历日期写在标题里，全年约 48 条。天文算法本地推算，不用等任何机构发布。</p>
-    <p><a href="reddays-lunar.ics">reddays-lunar.ics</a> · <a href="webcal://ygnstudio.github.io/RedDays/reddays-lunar.ics">iPhone 点此直接添加</a></p>
-  </section>
-
-  <section>
-    <h2>每日黄历</h2>
+    <p class="links"><a href="reddays-lunar.ics">reddays-lunar.ics</a><a href="webcal://ygnstudio.github.io/RedDays/reddays-lunar.ics">iPhone 点此直接添加</a></p>
+  </div>
+  <div class="cal">
+    <h3>每日黄历</h3>
     <p>每天一条，标题是宜忌摘要，点开有完整宜忌、冲煞、彭祖百忌、胎神占方和吉凶神。信不信由你，当个传统文化日历用。</p>
-    <p><a href="reddays-almanac.ics">reddays-almanac.ics</a> · <a href="webcal://ygnstudio.github.io/RedDays/reddays-almanac.ics">iPhone 点此直接添加</a></p>
-  </section>
+    <p class="links"><a href="reddays-almanac.ics">reddays-almanac.ics</a><a href="webcal://ygnstudio.github.io/RedDays/reddays-almanac.ics">iPhone 点此直接添加</a></p>
+  </div>
 
-  <section>
-    <h2>香港公众假期</h2>
-    <p>香港特区政府公布的公众假期名单（1823 官方数据），分简体和繁体两个版本，标题语言互补地写在对方描述里。港股、跨境安排用。</p>
-    <p><a href="reddays-hk.ics">reddays-hk.ics</a>（简体） · <a href="webcal://ygnstudio.github.io/RedDays/reddays-hk.ics">iPhone 添加简体版</a></p>
-    <p><a href="reddays-hk-tc.ics">reddays-hk-tc.ics</a>（繁體） · <a href="webcal://ygnstudio.github.io/RedDays/reddays-hk-tc.ics">iPhone 添加繁體版</a></p>
-  </section>
+  <h2>香港公众假期</h2>
+  <div class="cal">
+    <h3>简体版</h3>
+    <p>香港特区政府 1823 官方名单，标题与描述均为简体。港股、跨境安排用。</p>
+    <p class="links"><a href="reddays-hk.ics">reddays-hk.ics</a><a href="webcal://ygnstudio.github.io/RedDays/reddays-hk.ics">iPhone 点此直接添加</a></p>
+  </div>
+  <div class="cal">
+    <h3>繁體版</h3>
+    <p>同一份官方名單，標題與描述均為繁體。與簡體版任選其一即可。</p>
+    <p class="links"><a href="reddays-hk-tc.ics">reddays-hk-tc.ics</a><a href="webcal://ygnstudio.github.io/RedDays/reddays-hk-tc.ics">iPhone 點此直接添加</a></p>
+  </div>
 
   <section class="how">
     <h2>添加方式</h2>
@@ -457,7 +483,7 @@ INDEX_TEMPLATE = """<!doctype html>
     <p>Android（Google 日历）：手机或电脑浏览器打开 calendar.google.com，左上角 ＋ → 设置 → 添加日历 → 从网址，粘贴链接。订阅会自动同步到登录同一账号的手机日历。无法访问 Google 的设备，可换用任何支持「网址订阅」的日历应用，粘贴 https 链接即可。</p>
   </section>
 
-  <footer>节假日原始数据（JSON）与源码：<a href="https://github.com/ygnstudio/RedDays">github.com/ygnstudio/RedDays</a></footer>
+  <footer>原始数据（JSON）与源码：<a href="https://github.com/ygnstudio/RedDays">github.com/ygnstudio/RedDays</a></footer>
 </main>
 </body>
 </html>

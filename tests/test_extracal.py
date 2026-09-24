@@ -90,21 +90,22 @@ def hk_days(tmp_path):
     ]
 
 
-def test_hk_events_use_simplified_with_traditional_desc(hk_days):
+def test_hk_events_use_simplified_desc(hk_days):
     events = hk_build_events(hk_days, "sc")
     by_summary = {e[2]: e for e in events}
     assert set(by_summary) == {"一月一日", "圣诞节"}
     christmas = by_summary["圣诞节"]
-    assert "官方繁体：聖誕節" in christmas[3]
-    assert "香港特区政府" in christmas[3]
+    assert "依据香港特区政府" in christmas[3]
+    assert all("聖誕節" not in e[3] for e in events)
 
 
-def test_hk_tc_variant_flips_title(hk_days):
+def test_hk_tc_variant_all_traditional(hk_days):
     events = hk_build_events(hk_days, "tc")
     by_summary = {e[2]: e for e in events}
     assert set(by_summary) == {"一月一日", "聖誕節"}
     christmas = by_summary["聖誕節"]
-    assert "簡體：圣诞节" in christmas[3]
+    assert "依據香港特區政府" in christmas[3]
+    assert all("圣诞节" not in e[3] and "香港特区政府" not in e[3] for e in events)
 
 
 def test_hk_render_has_events(hk_days):
