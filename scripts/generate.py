@@ -457,7 +457,7 @@ INDEX_TEMPLATE = """<!doctype html>
   <h2>历法</h2>
   <div class="cal">
     <h3>节气农历</h3>
-    <p>二十四节气（含交节时刻）加每月初一十五，农历日期写在标题里，全年约 48 条。天文算法本地推算，不用等任何机构发布。</p>
+    <p>每天一条带农历日期（正月初一、腊月廿八），二十四节气单列并含交节时刻，全年约 390 条。天文算法本地推算，不用等任何机构发布。</p>
     <p class="links"><a href="reddays-lunar.ics">reddays-lunar.ics</a><a href="webcal://ygnstudio.github.io/RedDays/reddays-lunar.ics">iPhone 点此直接添加</a></p>
   </div>
   <div class="cal">

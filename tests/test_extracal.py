@@ -31,17 +31,18 @@ def test_lunar_has_24_jieqi(lunar_events_2026):
 
 
 def test_lunar_covers_year_boundary(lunar_events_2026):
-    """2026 年 1 月应有上个农历年的腊月朔望，12 月后无下年正月初一。"""
+    """2026 年 1 月应有上个农历年的腊月日期，12 月后无断档。"""
     dates = {e[0].isoformat() for e in lunar_events_2026}
     jan = [d for d in dates if d.startswith("2026-01")]
-    assert jan, "年初缺少上一年农历月的朔望"
+    assert jan, "年初缺少上一年农历月的日期"
 
 
-def test_lunar_shuo_titles(lunar_events_2026):
-    shuo = [e for e in lunar_events_2026 if "-shuo@" in e[1]]
-    summaries = {e[2] for e in shuo}
-    assert "正月初一" in summaries
-    assert len(shuo) >= 11
+def test_lunar_daily_covers_every_day(lunar_events_2026):
+    """每日农历事件覆盖全年且无重复日期；农历正月初一在标题中。"""
+    daily = [e for e in lunar_events_2026 if "-lunar@" in e[1]]
+    assert len(daily) == 365
+    assert len({e[0] for e in daily}) == 365
+    assert any(e[2] == "正月初一" and e[0].isoformat() == "2026-02-17" for e in daily)
 
 
 def test_lunar_jieqi_moment_in_description(lunar_events_2026):

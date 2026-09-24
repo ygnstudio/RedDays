@@ -2,7 +2,7 @@
 """节气农历版与每日黄历版生成（lunar_python 本地计算，无外部数据源）。
 
 产出两个 ICS：
-- reddays-lunar.ics：二十四节气（含精确交节时刻）+ 每月朔望，农历日期入标题
+- reddays-lunar.ics：每天一条带农历日期，二十四节气单列（含精确交节时刻）
 - reddays-almanac.ics：每日一条黄历（宜忌、冲煞、彭祖百忌、胎神、吉凶神）
 
 节气与农历由天文算法推算，年份窗口随运行日期滚动，无需人工放行。
@@ -60,7 +60,7 @@ def _jieqi_table(lunar) -> dict:
 
 
 def build_lunar_events(years):
-    """二十四节气（含时刻）+ 每月初一/十五，农历日期入标题。"""
+    """每天一条带农历日期；节气日另有单列事件，标题为节气名、描述含交节时刻。"""
     events = []
     seen = set()
     for year in years:
@@ -69,16 +69,10 @@ def build_lunar_events(years):
             solar = Solar.fromYmd(day.year, day.month, day.day)
             lunar = solar.getLunar()
             name = lunar.getJieQi()
-            is_shuo = lunar.getDayInChinese() == "初一"
-            is_wang = lunar.getDayInChinese() == "十五"
-            if not name and not is_shuo and not is_wang:
-                continue
+            if name and table is None:
+                table = _jieqi_table(lunar)
             if name:
-                if table is None:
-                    table = _jieqi_table(lunar)
                 stamp = table.get(name)
-                kind = "jieqi"
-                summary = name
                 moment = ""
                 if stamp is not None and stamp.toYmd() == day.isoformat():
                     moment = f"{stamp.getHour():02d}:{stamp.getMinute():02d}"
@@ -86,16 +80,17 @@ def build_lunar_events(years):
                 if moment:
                     desc += f"，交节时刻 {moment}（北京时间）"
                 desc += "。二十四节气依天文算法推算。"
-            else:
-                kind = "shuo" if is_shuo else "wang"
-                month = lunar.getMonthInChinese()
-                prefix = "闰" if lunar.getMonth() < 0 else ""
-                day_cn = lunar.getDayInChinese()
-                summary = f"{prefix}{month}月{day_cn}"
-                ganzhi = lunar.getYearInGanZhi()
-                desc = f"农历{lunar.getYearInChinese()}年（{ganzhi}年）{summary}"
-            date_nodash = day.strftime("%Y%m%d")
-            uid = f"{date_nodash}-{kind}@{UID_DOMAIN}"
+                uid = f"{day.strftime('%Y%m%d')}-jieqi@{UID_DOMAIN}"
+                if uid not in seen:
+                    seen.add(uid)
+                    events.append((day, uid, name, desc))
+            # 每日农历事件：标题为农历月日（如 正月初一、闰六月十五）
+            month = lunar.getMonthInChinese()
+            prefix = "闰" if lunar.getMonth() < 0 else ""
+            summary = f"{prefix}{month}月{lunar.getDayInChinese()}"
+            ganzhi = lunar.getYearInGanZhi()
+            desc = f"农历{lunar.getYearInChinese()}年（{ganzhi}年）{summary}"
+            uid = f"{day.strftime('%Y%m%d')}-lunar@{UID_DOMAIN}"
             if uid in seen:
                 continue
             seen.add(uid)
