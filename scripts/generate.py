@@ -521,13 +521,20 @@ def data_status_html() -> str:
     不做硬编码，避免数字随时间腐化。
     """
     data_dir = workspace_path("data")
-    cn = sorted(
-        int(f[:4]) for f in os.listdir(data_dir) if f.endswith(".json")
-    )
+    cn = []
+    for f in os.listdir(data_dir):
+        if not f.endswith(".json"):
+            continue
+        with open(os.path.join(data_dir, f), encoding="utf-8") as fh:
+            if json.load(fh).get("days"):
+                cn.append(int(f[:4]))
+    cn.sort()
     hk_dir = os.path.join(data_dir, "hk")
     hk = sorted(
         int(f[:4]) for f in os.listdir(hk_dir) if f.endswith(".json")
     )
+    with open(os.path.join(data_dir, "losar.json"), encoding="utf-8") as fh:
+        losar = sorted(int(y) for y in json.load(fh)["losar"])
     today = dt.date.today()
     rolling = f"{today.year - 1}-{today.year + 2}"
     almanac = f"{today.year}-{today.year + 1}"
@@ -551,10 +558,11 @@ def data_status_html() -> str:
         "每日对照官方来源自动同步；历法类由天文算法每日滚动生成，无需人工。</p>\n"
         f"  <p>当前数据范围：大陆法定节假日 {cn[0]}-{cn[-1]} 年；香港公众假期 "
         f"{hk[0]}-{hk[-1]} 年；节气农历、回历每日、民族节日、基督教历为滚动窗口"
-        f"（当前 {rolling} 年）；每日黄历 {almanac} 年；藏历新年已核实表 2024-2028 年。</p>\n"
-        "  <p>下一次更新：大陆 2028 年放假安排预计 2026 年 10-12 月公告发布后"
-        "自动解析、人工核对放行；香港 2028 年名单预计 2026 年末至 2027 年初"
-        "官方数据更新后同样核对；藏历表 2029 年起需逐年核实补充。</p>\n"
+        f"（当前 {rolling} 年）；每日黄历 {almanac} 年；藏历新年由 Phugpa 参考实现"
+        f"推算，覆盖 {losar[0]}-{losar[-1]} 年。</p>\n"
+        "  <p>新年份数据由机器校验把关（天数区间与同比偏差），校验通过即自动上线，"
+        "不过则拦下发布并开告警 issue。其余日历随每日运行自动推进窗口，"
+        "无需任何人工维护。</p>\n"
         "</section>\n\n"
     )
 

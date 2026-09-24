@@ -1,6 +1,7 @@
 """节气农历、每日黄历与香港假期生成的离线测试。"""
 
 import json
+import datetime as dt
 
 import pytest
 
@@ -131,23 +132,31 @@ def test_hk_write_all_emits_both_variants(hk_days, tmp_path, monkeypatch):
     assert "-off-hk-tc@reddays" in tc
 
 
-def test_hk_gate_detects_unapproved_change(tmp_path, monkeypatch):
-    """未放行年份的数据变化必须被 detect_hk_pending 捕获。"""
-    import sync as sync_mod
+def test_losar_table_covers_rolling_window():
+    """滚动窗口年份必须全部在洛萨表覆盖范围内，越界即提醒重新生成。"""
+    today = dt.date.today()
+    for year in range(today.year - 1, today.year + 3):
+        assert year in hk_losar_years(), f"losar table missing {year}"
 
-    days_old = [{"date": "2027-01-01", "name": "a", "name_zh_hk": "a"}]
-    days_new = [{"date": "2027-01-01", "name": "b", "name_zh_hk": "b"}]
 
-    def fake_read(year):
-        return days_new
+def hk_losar_years():
+    with open(
+        os.path.join(os.path.dirname(__file__), "..", "data", "losar.json"),
+        encoding="utf-8",
+    ) as f:
+        return {int(y) for y in json.load(f)["losar"]}
 
-    def fake_head(year):
-        return json.dumps({"days": days_old})
 
-    monkeypatch.setattr(sync_mod, "_read_hk_days", fake_read)
-    monkeypatch.setattr(sync_mod, "hk_head_content", fake_head)
-    assert sync_mod.detect_hk_pending(approved={2025, 2026}, head_reader=fake_head) == [2027]
-    assert sync_mod.detect_hk_pending(approved={2025, 2026, 2027}, head_reader=fake_head) == []
+def test_losar_anchor_dates():
+    """表内锚点年份与论文核验值一致，防止数据文件被意外改动。"""
+    with open(
+        os.path.join(os.path.dirname(__file__), "..", "data", "losar.json"),
+        encoding="utf-8",
+    ) as f:
+        losar = json.load(f)["losar"]
+    assert losar["2025"] == [2, 28]
+    assert losar["2026"] == [2, 18]
+    assert losar["2027"] == [2, 7]
 
 
 def test_easter_computus():
@@ -203,9 +212,11 @@ def test_landing_page_shows_data_status(tmp_path, monkeypatch):
     html = open(index, encoding="utf-8").read()
     assert "数据维护" in html
     assert "最近维护于" in html
-    cn = sorted(
-        int(f[:4])
-        for f in os.listdir(os.path.join("data"))
-        if f.endswith(".json")
-    )
+    cn = []
+    for f in os.listdir(os.path.join("data")):
+        if f.endswith(".json") and f[:4].isdigit():
+            with open(os.path.join("data", f), encoding="utf-8") as fh:
+                if json.load(fh).get("days"):
+                    cn.append(int(f[:4]))
+    cn.sort()
     assert f"{cn[0]}-{cn[-1]} 年" in html

@@ -12,6 +12,7 @@
 
 import argparse
 import datetime as dt
+import json
 import os
 import sys
 
@@ -23,15 +24,17 @@ from lunar_python import Solar  # noqa: E402
 
 from generate import CalendarWriter, UID_DOMAIN  # noqa: E402
 
-# 藏历新年（洛萨）已核实公历日期。来源：维基百科「藏历新年」历年表与
-# R calcal 包 tibetan_new_year() 交叉一致。表外年份无从推算，须逐年核实补充。
-LOSAR = {
-    2024: (2, 10),
-    2025: (2, 28),
-    2026: (2, 18),
-    2027: (2, 7),
-    2028: (2, 26),
-}
+# 藏历新年（洛萨）：data/losar.json，由 Edward Henning kalacakra.org
+# Phugpa 参考实现（tcg v1.06）生成，覆盖 1900-2099；2000-2030 与
+# Svante Janson《Tibetan Calendar Mathematics》Table 9 逐年一致。
+# 测试锁定滚动窗口年份必须在表覆盖范围内，越界即失败提醒重新生成。
+def _load_losar() -> dict[int, tuple[int, int]]:
+    with open(workspace_path("data", "losar.json"), encoding="utf-8") as f:
+        raw = json.load(f)["losar"]
+    return {int(y): (m, d) for y, (m, d) in raw.items()}
+
+
+LOSAR = _load_losar()
 
 # 彝历新年（彝族年）：凉山州人民政府办公室历年节假日安排通知均为
 # 11 月 20 日开始放假（2025、2026 两年公告一致），此处记录首日。

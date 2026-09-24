@@ -5,12 +5,13 @@
 | 模块 | 职责 | 依赖 |
 |---|---|---|
 | `scripts/govcn.py` | gov.cn 搜索接口找通知 → 抽正文 → 两阶段定年解析中文句式为结构化假期数据 | requests, bs4 |
-| `scripts/sync.py` | 数据同步编排：直连解析 + 快照降级 + 双重守卫，输出同步状态供 CI 判断 | 标准库（layer1 间接依赖 govcn.py） |
+| `scripts/sync.py` | 数据同步编排：直连解析 + 快照降级 + 三重守卫（新鲜度/季节性/年度合理性），输出同步状态供 CI 判断 | 标准库（layer1 间接依赖 govcn.py） |
 | `scripts/generate.py` | JSON → 三版本 ICS；RFC 5545 折行/转义自实现 | 纯标准库 |
 | `scripts/lunarcal.py` | 节气农历版 + 每日黄历版 ICS，天文算法本地推算 | lunar_python |
 | `scripts/hkholiday.py` | 抓取香港 1823 官方 JSON，落地 data/hk/ | requests |
 | `scripts/hkcal.py` | data/hk/ → 香港公众假期 ICS（简体 + 繁体两版） | 标准库 |
-| `scripts/ethniccal.py` | 民族节日、回历每日、基督教历三个 ICS；回历推算 + 复活节 computus + 已核实节日表 | hijridate、lunar_python |
+| `scripts/ethniccal.py` | 民族节日、回历每日、基督教历三个 ICS；回历推算 + 复活节 computus + data/losar.json 洛萨表 | hijridate、lunar_python |
+| `scripts/readme_status.py` | 重写 README「数据维护状态」标记区块（CI 自动运行） | 标准库 |
 | `scripts/crosscheck.py` | 拉苹果官方 cn_zh 日历，比对补班日集合（发布门禁） | 标准库 |
 | `config.py` | 全部展示偏好：命名模板、补班时间、提醒、颜色、描述开关 | 无 |
 | `publish.yml` | 编排整个链路并部署 GitHub Pages | 无 |
@@ -41,7 +42,7 @@ gov.cn 公告 ──Layer1 直连解析──┐
 ## 发布门禁（顺序执行，任一失败即不发布）
 
 1. **生成守卫**：sync 前后各生成一次 ICS，数据变了而 ICS 没变 = 生成器坏 → fail
-2. **新年份人审门禁**：未列于 `data/approved.txt` 的年份数据相对 HEAD 发生变化 → hold（不提交、不上线）并开 issue 附逐条摘要与公告原文链接；人工核对后把年份加入 approved.txt 推送，下次运行自动放行。这是唯一无真值、无苹果日历兜底的窗口。小模型自动校验试过并否决：Qwen3-1.7B 对 20 年公告回测仅 3/20，4B 会幻觉补班
+2. **年度合理性校验**：新年份数据自动上线，无人工放行。校验规则：大陆放/班天数区间（2007-2026 实测 off 22-33、work 5-12）、与上年放假日数偏差 ≤40%、香港每年 12-20 天；任一不过 → sync.py exit 2，本次发布拦截，workflow 失败并开告警 issue。校验盯的是解析错漏（整段丢失、日期错位），拦不住与公告一致性无关的个别日期笔误，极端情形以苹果日历当年交叉校验兜底。小模型自动校验试过并否决：Qwen3-1.7B 对 20 年公告回测仅 3/20，4B 会幻觉补班；规则化校验无此问题
 3. **双源校验**：与苹果官方日历比对当年补班日集合（必须相等）+ 苹果休日 ⊆ 我们休日（苹果只标首日）
 4. **测试**：37 项离线测试（2026 真值断言、确定性输出、UID 稳定、RFC 5545 合规）；1 项网络测试默认跳过（layer1 本身就是真集成测试）
 
@@ -60,7 +61,7 @@ gov.cn 公告 ──Layer1 直连解析──┐
 
 ## 运维手册
 
-**新年份公告发布后的放行流程**：公告发布后最坏 12 小时内自动运行会开「[bot] 新年份安排待人工确认」issue，附逐条摘要（放假区间/补班日/公告原文链接）。核对无误 → 把年份加入 `data/approved.txt` 提交推送，下次运行自动提交数据并上线；有出入 → 修复 `govcn.py` 后手工修正 `data/{year}.json` 再放行。issue 按标题去重，不会重复开。
+**新年份公告发布后的处理流程**：公告发布后最坏 12 小时内自动解析（历年 10-12 月发布次年安排），通过年度合理性校验即自动提交数据并上线；校验不过 → workflow 失败并开「[bot] 数据源降级告警」或失败邮件，对照公告原文修复 `scripts/govcn.py` 后手工修正 `data/{year}.json` 再推。
 
 **gov.cn 改版导致 Layer1 失败**：排查 `scripts/govcn.py`，最可能变动的三处是搜索接口参数（见 `find_notices`）、正文容器（`download_notice` 的 `UCAP-CONTENT`）和句式正则（`_RE_OFF/_RE_WORK/_RE_SHIFT`）；修复后跑 network 标记的真值对照测试（`pytest -m network`）确认 20 年数据仍逐日一致。修复前数据冻结在快照（照常发布旧数据 + 降级告警），可手工核对公告原文，临时往 `data/{year}.json` 补数据。
 
