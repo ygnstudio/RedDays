@@ -233,6 +233,10 @@ def test_landing_page_shows_data_status(tmp_path, monkeypatch):
     # 权威性板块必须存在，且黄历如实标注没有官方标准
     assert "数据来源与权威性" in html
     assert "没有官方标准" in html
+    # 深浅色切换与移动端断点基建必须在
+    assert "prefers-color-scheme: dark" in html
+    assert "theme-toggle" in html
+    assert "max-width: 480px" in html
     cn = []
     for f in os.listdir(os.path.join("data")):
         if f.endswith(".json") and f[:4].isdigit():

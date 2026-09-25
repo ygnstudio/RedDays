@@ -358,12 +358,55 @@ INDEX_TEMPLATE = """<!doctype html>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#ffffff">
 <title>{title}</title>
+<script>
+  (function() {{
+    try {{
+      var t = localStorage.getItem("rd-theme");
+      if (t === "dark" || t === "light") {{
+        document.documentElement.dataset.theme = t;
+      }}
+    }} catch (e) {{}}
+  }})();
+</script>
 <style>
+  :root {{
+    color-scheme: light;
+    --bg: #ffffff;
+    --card: #f5f4ed;
+    --ink: #33322e;
+    --muted: #6b6a61;
+    --rule: #d9d6c8;
+    --accent: #1B365D;
+    --link-rule: #b9c4d4;
+  }}
+  [data-theme="dark"] {{
+    color-scheme: dark;
+    --bg: #191813;
+    --card: #22211a;
+    --ink: #e6e4d8;
+    --muted: #a3a093;
+    --rule: #3b392f;
+    --accent: #8ea9cf;
+    --link-rule: #46536b;
+  }}
+  @media (prefers-color-scheme: dark) {{
+    :root:not([data-theme="light"]) {{
+      color-scheme: dark;
+      --bg: #191813;
+      --card: #22211a;
+      --ink: #e6e4d8;
+      --muted: #a3a093;
+      --rule: #3b392f;
+      --accent: #8ea9cf;
+      --link-rule: #46536b;
+    }}
+  }}
   body {{
     margin: 0;
-    background: #ffffff;
-    color: #33322e;
+    background: var(--bg);
+    color: var(--ink);
     font: 16px/1.9 "Songti SC", "Noto Serif CJK SC", "Source Han Serif SC", serif;
   }}
   main {{
@@ -374,31 +417,31 @@ INDEX_TEMPLATE = """<!doctype html>
   h1 {{
     font-size: 28px;
     font-weight: 600;
-    color: #1B365D;
+    color: var(--accent);
     margin: 0 0 10px;
   }}
   .sub {{
     margin: 0 0 44px;
-    color: #6b6a61;
+    color: var(--muted);
   }}
   h2 {{
     font-size: 15px;
     font-weight: 600;
     letter-spacing: 0.1em;
-    color: #6b6a61;
-    border-bottom: 1px solid #d9d6c8;
+    color: var(--muted);
+    border-bottom: 1px solid var(--rule);
     padding-bottom: 8px;
     margin: 52px 0 4px;
   }}
   .cal {{
-    background: #f5f4ed;
+    background: var(--card);
     padding: 14px 18px 10px;
     margin: 14px 0 0;
   }}
   .cal h3 {{
     font-size: 18px;
     font-weight: 600;
-    color: #1B365D;
+    color: var(--accent);
     margin: 0 0 4px;
   }}
   .cal p {{
@@ -406,34 +449,89 @@ INDEX_TEMPLATE = """<!doctype html>
   }}
   .links {{
     font-size: 15px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 16px;
   }}
   .how {{
-    color: #6b6a61;
+    color: var(--muted);
   }}
   .how h2 {{
-    color: #6b6a61;
+    color: var(--muted);
   }}
   p {{
     margin: 0 0 10px;
   }}
   a {{
-    color: #1B365D;
+    color: var(--accent);
     text-decoration: none;
-    border-bottom: 1px solid #b9c4d4;
-  }}
-  .links a + a {{
-    margin-left: 14px;
+    border-bottom: 1px solid var(--link-rule);
   }}
   footer {{
-    border-top: 1px solid #d9d6c8;
+    border-top: 1px solid var(--rule);
     margin-top: 52px;
     padding-top: 18px;
-    color: #6b6a61;
+    color: var(--muted);
     font-size: 14px;
+  }}
+  #theme-toggle {{
+    position: fixed;
+    top: 14px;
+    right: 16px;
+    z-index: 10;
+    font: 13px/1 "Songti SC", "Noto Serif CJK SC", "Source Han Serif SC", serif;
+    color: var(--muted);
+    background: var(--card);
+    border: 1px solid var(--rule);
+    border-radius: 2px;
+    padding: 6px 12px;
+    cursor: pointer;
+  }}
+  #theme-toggle:active {{
+    transform: scale(0.96);
+  }}
+  @media (prefers-reduced-motion: no-preference) {{
+    body, .cal, #theme-toggle {{
+      transition: background-color 0.18s ease, color 0.18s ease, border-color 0.18s ease;
+    }}
+  }}
+  @media (max-width: 880px) {{
+    main {{
+      padding: 44px 20px 60px;
+    }}
+  }}
+  @media (max-width: 480px) {{
+    main {{
+      padding: 40px 18px 52px;
+    }}
+    h1 {{
+      font-size: 23px;
+    }}
+    .sub {{
+      margin-bottom: 34px;
+    }}
+    h2 {{
+      margin: 42px 0 4px;
+    }}
+    .cal {{
+      padding: 12px 14px 8px;
+    }}
+    .cal h3 {{
+      font-size: 17px;
+    }}
+    #theme-toggle {{
+      top: 10px;
+      right: 12px;
+      padding: 5px 10px;
+    }}
+    footer {{
+      margin-top: 44px;
+    }}
   }}
 </style>
 </head>
 <body>
+<button id="theme-toggle" type="button" aria-label="切换深浅色模式">夜间</button>
 <main>
   <h1>{title}</h1>
   <p class="sub">官方公告与天文历法自动保持更新。按需选订，互不冲突。</p>
@@ -517,6 +615,32 @@ INDEX_TEMPLATE = """<!doctype html>
 
   <footer>原始数据（JSON）与源码：<a href="https://github.com/ygnstudio/RedDays">github.com/ygnstudio/RedDays</a></footer>
 </main>
+<script>
+  (function() {{
+    var btn = document.getElementById("theme-toggle");
+    var meta = document.querySelector('meta[name="theme-color"]');
+    var DARK_BG = "#191813";
+    var LIGHT_BG = "#ffffff";
+    function effective() {{
+      var t = document.documentElement.dataset.theme;
+      if (t === "dark" || t === "light") return t;
+      return window.matchMedia("(prefers-color-scheme: dark)").matches
+        ? "dark" : "light";
+    }}
+    function apply() {{
+      var dark = effective() === "dark";
+      btn.textContent = dark ? "日间" : "夜间";
+      meta.setAttribute("content", dark ? DARK_BG : LIGHT_BG);
+    }}
+    btn.addEventListener("click", function() {{
+      var next = effective() === "dark" ? "light" : "dark";
+      document.documentElement.dataset.theme = next;
+      try {{ localStorage.setItem("rd-theme", next); }} catch (e) {{}}
+      apply();
+    }});
+    apply();
+  }})();
+</script>
 </body>
 </html>
 """
